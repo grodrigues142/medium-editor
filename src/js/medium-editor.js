@@ -220,7 +220,9 @@ if (typeof module === 'object') {
         var selection, range, el, fragment, node, lastNode;
 
         if (doc.queryCommandSupported('insertHTML')) {
-            return doc.execCommand('insertHTML', false, html);
+            try {
+                return doc.execCommand('insertHTML', false, html);
+            } catch (ignore) {}
         }
 
         selection = window.getSelection();
@@ -437,13 +439,21 @@ if (typeof module === 'object') {
             this.elements = Array.prototype.slice.apply(selector);
         },
 
-        bindBlur: function (i) {
+        bindBlur: function () {
             var self = this,
                 blurFunction = function (e) {
+                    var isDescendantOfEditorElements = false,
+                        i;
+                    for (i = 0; i < self.elements.length; i += 1) {
+                        if (isDescendant(self.elements[i], e.target)) {
+                            isDescendantOfEditorElements = true;
+                            break;
+                        }
+                    }
                     // If it's not part of the editor, or the toolbar
                     if (e.target !== self.toolbar
-                            && e.target !== self.elements[0]
-                            && !isDescendant(self.elements[0], e.target)
+                            && self.elements.indexOf(e.target) === -1
+                            && !isDescendantOfEditorElements
                             && !isDescendant(self.toolbar, e.target)
                             && !isDescendant(self.anchorPreview, e.target)) {
 
@@ -498,7 +508,7 @@ if (typeof module === 'object') {
                 // Bind the return and tab keypress events
                 this.bindReturn(i)
                     .bindKeydown(i)
-                    .bindBlur(i)
+                    .bindBlur()
                     .bindClick(i);
             }
 
@@ -1376,7 +1386,7 @@ if (typeof module === 'object') {
         getSelectedParentElement: function () {
             var selectedParentElement = null,
                 range = this.selectionRange;
-            if (this.rangeSelectsSingleNode(range)) {
+            if (this.rangeSelectsSingleNode(range) && range.startContainer.childNodes[range.startOffset].nodeType !== 3) {
                 selectedParentElement = range.startContainer.childNodes[range.startOffset];
             } else if (range.startContainer.nodeType === 3) {
                 selectedParentElement = range.startContainer.parentNode;
@@ -1815,26 +1825,7 @@ if (typeof module === 'object') {
         createLink: function (input, target, buttonClass) {
             var i, event;
 
-            if (input.value.trim().length === 0) {
-                this.hideToolbarActions();
-                return;
-            }
-
-            restoreSelection.call(this, this.savedSelection);
-
-            if (this.options.checkLinkFormat) {
-                input.value = this.checkLinkFormat(input.value);
-            }
-
-            this.options.ownerDocument.execCommand('createLink', false, input.value);
-
-            if (this.options.targetBlank || target === "_blank") {
-                this.setTargetBlank();
-            }
-
-            if (buttonClass) {
-                this.setButtonClass(buttonClass);
-            }
+            this.createLinkInternal(input.value, target, buttonClass);
 
             if (this.options.targetBlank || target === "_blank" || buttonClass) {
                 event = this.options.ownerDocument.createEvent("HTMLEvents");
@@ -1847,6 +1838,29 @@ if (typeof module === 'object') {
             this.checkSelection();
             this.showToolbarActions();
             input.value = '';
+        },
+
+        createLinkInternal: function (url, target, buttonClass) {
+            if (!url || url.trim().length === 0) {
+                this.hideToolbarActions();
+                return;
+            }
+
+            restoreSelection.call(this, this.savedSelection);
+
+            if (this.options.checkLinkFormat) {
+                url = this.checkLinkFormat(url);
+            }
+
+            this.options.ownerDocument.execCommand('createLink', false, url);
+
+            if (this.options.targetBlank || target === "_blank") {
+                this.setTargetBlank();
+            }
+
+            if (buttonClass) {
+                this.setButtonClass(buttonClass);
+            }
         },
 
         positionToolbarIfShown: function () {
@@ -1944,11 +1958,7 @@ if (typeof module === 'object') {
                         paragraphs = e.clipboardData.getData(dataFormatPlain).split(/[\r\n]/g);
                         for (p = 0; p < paragraphs.length; p += 1) {
                             if (paragraphs[p] !== '') {
-                                if (navigator.userAgent.match(/firefox/i) && p === 0) {
-                                    html += self.htmlEntities(paragraphs[p]);
-                                } else {
-                                    html += '<p>' + self.htmlEntities(paragraphs[p]) + '</p>';
-                                }
+                                html += '<p>' + self.htmlEntities(paragraphs[p]) + '</p>';
                             }
                         }
                         insertHTMLCommand(self.options.ownerDocument, html);
@@ -2085,7 +2095,7 @@ if (typeof module === 'object') {
                 }
 
             }
-            this.options.ownerDocument.execCommand('insertHTML', false, fragmentBody.innerHTML.replace(/&nbsp;/g, ' '));
+            insertHTMLCommand(this.options.ownerDocument, fragmentBody.innerHTML.replace(/&nbsp;/g, ' '));
         },
         isCommonBlock: function (el) {
             return (el && (el.tagName.toLowerCase() === 'p' || el.tagName.toLowerCase() === 'div'));

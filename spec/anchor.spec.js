@@ -1,6 +1,7 @@
 /*global MediumEditor, describe, it, expect, spyOn,
          afterEach, beforeEach, selectElementContents,
-         jasmine, fireEvent, console, tearDown*/
+         jasmine, fireEvent, console, tearDown,
+         selectElementContentsAndFire, xit */
 
 describe('Anchor Button TestCase', function () {
     'use strict';
@@ -23,8 +24,7 @@ describe('Anchor Button TestCase', function () {
             spyOn(MediumEditor.prototype, 'showAnchorForm').and.callThrough();
             var button,
                 editor = new MediumEditor('.editor');
-            selectElementContents(editor.elements[0]);
-            fireEvent(editor.elements[0], 'mouseup');
+            selectElementContentsAndFire(editor.elements[0]);
             jasmine.clock().tick(1);
             button = editor.toolbar.querySelector('[data-element="a"]');
             fireEvent(button, 'click');
@@ -37,8 +37,7 @@ describe('Anchor Button TestCase', function () {
             spyOn(MediumEditor.prototype, 'showToolbarActions').and.callThrough();
             var button,
                 editor = new MediumEditor('.editor');
-            selectElementContents(editor.elements[0]);
-            fireEvent(editor.elements[0], 'mouseup');
+            selectElementContentsAndFire(editor.elements[0]);
             jasmine.clock().tick(1);
             button = editor.toolbar.querySelector('[data-element="a"]');
             editor.anchorForm.style.display = 'block';
@@ -53,8 +52,7 @@ describe('Anchor Button TestCase', function () {
             this.el.innerHTML = '<a href="#">link</a>';
             var button,
                 editor = new MediumEditor('.editor');
-            selectElementContents(editor.elements[0]);
-            fireEvent(editor.elements[0], 'mouseup');
+            selectElementContentsAndFire(editor.elements[0]);
             jasmine.clock().tick(1);
             button = editor.toolbar.querySelector('[data-element="a"]');
             fireEvent(button, 'click');
@@ -96,32 +94,32 @@ describe('Anchor Button TestCase', function () {
         it('should add http:// if need be and checkLinkFormat option is set to true', function () {
             var editor = new MediumEditor('.editor', {
                 checkLinkFormat: true
-            }),
-                input = editor.anchorForm.querySelector('input');
-            selectElementContents(editor.elements[0]);
-            input.value = 'test.com';
-            editor.createLink(input);
+            });
+            selectElementContentsAndFire(editor.elements[0]);
+            editor.showAnchorForm('test.com');
+            fireEvent(editor.anchorForm.querySelector('a.medium-editor-toobar-save'), 'click');
+
             expect(editor.elements[0].querySelector('a').href).toBe('http://test.com/');
         });
         it('should not change protocol when a valid one is included', function () {
             var editor = new MediumEditor('.editor', {
                 checkLinkFormat: true
             }),
-                input = editor.anchorForm.querySelector('input'),
                 validUrl = 'mailto:test.com';
-            selectElementContents(editor.elements[0]);
-            input.value = validUrl;
-            editor.createLink(input);
+            selectElementContentsAndFire(editor.elements[0]);
+            editor.showAnchorForm(validUrl);
+            fireEvent(editor.anchorForm.querySelector('a.medium-editor-toobar-save'), 'click');
+
             expect(editor.elements[0].querySelector('a').href).toBe(validUrl);
         });
         it('should add target="_blank" when respective option is set to true', function () {
             var editor = new MediumEditor('.editor', {
                 targetBlank: true
-            }),
-                input = editor.anchorForm.querySelector('input');
-            selectElementContents(editor.elements[0]);
-            input.value = 'http://test.com';
-            editor.createLink(input);
+            });
+            selectElementContentsAndFire(editor.elements[0]);
+            editor.showAnchorForm('http://test.com');
+            fireEvent(editor.anchorForm.querySelector('a.medium-editor-toobar-save'), 'click');
+
             expect(editor.elements[0].querySelector('a').target).toBe('_blank');
         });
         it('should create a button when user selects this option and presses enter', function () {
@@ -147,15 +145,6 @@ describe('Anchor Button TestCase', function () {
 
             fireEvent(input, 'keyup', 13);
             expect(editor.createLink).toHaveBeenCalledWith(input, '_self', 'btn btn-default');
-        });
-        it('should set class when respective option is set to true and checkbox is checked', function () {
-            var editor = new MediumEditor('.editor'),
-                input = editor.anchorForm.querySelector('input');
-
-            selectElementContents(editor.elements[0]);
-            input.value = 'http://test.com';
-
-            editor.createLink(input, '_blank', 'btn btn-default');
             expect(editor.elements[0].querySelector('a').classList.contains('btn')).toBe(true);
             expect(editor.elements[0].querySelector('a').classList.contains('btn-default')).toBe(true);
         });

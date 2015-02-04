@@ -436,13 +436,21 @@ if (typeof module === 'object') {
             this.elements = Array.prototype.slice.apply(selector);
         },
 
-        bindBlur: function (i) {
+        bindBlur: function () {
             var self = this,
                 blurFunction = function (e) {
+                    var isDescendantOfEditorElements = false,
+                        i;
+                    for (i = 0; i < self.elements.length; i += 1) {
+                        if (isDescendant(self.elements[i], e.target)) {
+                            isDescendantOfEditorElements = true;
+                            break;
+                        }
+                    }
                     // If it's not part of the editor, or the toolbar
                     if (e.target !== self.toolbar
-                            && e.target !== self.elements[0]
-                            && !isDescendant(self.elements[0], e.target)
+                            && self.elements.indexOf(e.target) === -1
+                            && !isDescendantOfEditorElements
                             && !isDescendant(self.toolbar, e.target)
                             && !isDescendant(self.anchorPreview, e.target)) {
 
@@ -497,7 +505,7 @@ if (typeof module === 'object') {
                 // Bind the return and tab keypress events
                 this.bindReturn(i)
                     .bindKeydown(i)
-                    .bindBlur(i)
+                    .bindBlur()
                     .bindClick(i);
             }
 
@@ -1375,7 +1383,7 @@ if (typeof module === 'object') {
         getSelectedParentElement: function () {
             var selectedParentElement = null,
                 range = this.selectionRange;
-            if (this.rangeSelectsSingleNode(range)) {
+            if (this.rangeSelectsSingleNode(range) && range.startContainer.childNodes[range.startOffset].nodeType !== 3) {
                 selectedParentElement = range.startContainer.childNodes[range.startOffset];
             } else if (range.startContainer.nodeType === 3) {
                 selectedParentElement = range.startContainer.parentNode;
