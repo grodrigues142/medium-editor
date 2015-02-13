@@ -231,14 +231,9 @@ module.exports = function (grunt) {
         ]
     });
 
-<<<<<<< HEAD
     grunt.registerTask('test', ['connect', 'jslint', 'jasmine:suite', 'csslint', 'saucelabs-jasmine']);
     grunt.registerTask('sauce', ['connect', 'saucelabs-jasmine']);
-    grunt.registerTask('js', ['jslint', 'jasmine:suite', 'uglify', 'concat']);
-=======
-    grunt.registerTask('test', ['jslint', 'jasmine:suite', 'csslint']);
     grunt.registerTask('js', ['jslint', 'jasmine:suite', 'concat', 'uglify']);
->>>>>>> master
     grunt.registerTask('css', ['sass', 'autoprefixer', 'cssmin', 'csslint']);
     grunt.registerTask('default', ['js', 'css']);
 
