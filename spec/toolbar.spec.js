@@ -87,7 +87,6 @@ describe('Toolbar TestCase', function () {
 
             editor = new MediumEditor(document.getElementById('editor-for-toolbar-test'), { delay: 0 });
             selectElementContentsAndFire(document.getElementById('bold_dolorOne'));
-            selectElementContents(document.getElementById('bold_dolorOne'));
 
             jasmine.clock().tick(51);
             expect(editor.toolbar.querySelector('button[data-action="bold"]').classList.contains('medium-editor-button-active')).toBe(true);
@@ -142,7 +141,7 @@ describe('Toolbar TestCase', function () {
 
             selectElementContentsAndFire(document.getElementById('editor-span-1'));
 
-            jasmine.clock().tick(1);
+            jasmine.clock().tick(11); // checkSelection delay
 
             expect(editorOne.toolbar.classList.contains('medium-editor-toolbar-active')).toBe(true);
             expect(editorTwo.toolbar.classList.contains('medium-editor-toolbar-active')).toBe(false);
@@ -150,7 +149,7 @@ describe('Toolbar TestCase', function () {
             selectElementContentsAndFire(document.getElementById('editor-span-2'));
             fireEvent(editorTwo.elements[0], 'focus');
 
-            jasmine.clock().tick(1);
+            jasmine.clock().tick(11); // checkSelection delay
 
             expect(editorOne.toolbar.classList.contains('medium-editor-toolbar-active')).toBe(false);
             expect(editorTwo.toolbar.classList.contains('medium-editor-toolbar-active')).toBe(true);

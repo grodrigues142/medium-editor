@@ -1,7 +1,7 @@
 /*global MediumEditor, describe, it, expect, spyOn,
          afterEach, beforeEach, fireEvent, waits,
          jasmine, selectElementContents, tearDown,
-         selectElementContentsAndFire */
+         selectElementContentsAndFire, console */
 
 describe('Selection TestCase', function () {
     'use strict';
@@ -19,12 +19,40 @@ describe('Selection TestCase', function () {
         jasmine.clock().uninstall();
     });
 
+    describe('Saving Selection', function () {
+        it('should be applicable if html changes but text does not', function () {
+            this.el.innerHTML = 'lorem <i>ipsum</i> dolor';
+
+            var editor = new MediumEditor('.editor', {
+                buttons: ['italic', 'underline', 'strikethrough']
+            }),
+                button,
+                regex;
+
+            // Save selection around <i> tag
+            selectElementContents(editor.elements[0].querySelector('i'));
+            editor.saveSelection();
+
+            // Underline entire element
+            selectElementContents(editor.elements[0]);
+            button = editor.toolbar.querySelector('[data-action="underline"]');
+            fireEvent(button, 'click');
+
+            // Restore selection back to <i> tag and add a <strike> tag
+            regex = new RegExp("^<u>lorem (<i><strike>|<strike><i>)ipsum(</i></strike>|</strike></i>) dolor</u>$");
+            editor.restoreSelection();
+            button = editor.toolbar.querySelector('[data-action="strikethrough"]');
+            fireEvent(button, 'click');
+            expect(regex.test(editor.elements[0].innerHTML)).toBe(true);
+        });
+    });
+
     describe('CheckSelection', function () {
         it('should check for selection on mouseup event', function () {
             spyOn(MediumEditor.prototype, 'checkSelection');
             var editor = new MediumEditor('.editor');
             fireEvent(editor.elements[0], 'mouseup');
-            jasmine.clock().tick(1);
+            jasmine.clock().tick(11); // checkSelection delay
             expect(editor.checkSelection).toHaveBeenCalled();
         });
 
@@ -32,7 +60,7 @@ describe('Selection TestCase', function () {
             spyOn(MediumEditor.prototype, 'checkSelection');
             var editor = new MediumEditor('.editor');
             fireEvent(editor.elements[0], 'keyup');
-            jasmine.clock().tick(1);
+            jasmine.clock().tick(11); // checkSelection delay
             expect(editor.checkSelection).toHaveBeenCalled();
         });
 

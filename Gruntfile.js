@@ -31,7 +31,14 @@ module.exports = function (grunt) {
         }, {
             browserName: "googlechrome",
             platform: "mac"
-        }];
+        }],
+        srcFiles = [
+            'src/js/util.js',
+            'src/js/selection.js',
+            'src/js/button.js',
+            'src/js/paste.js',
+            'src/js/core.js'
+        ];
 
     gruntConfig.connect = {
         server: {
@@ -88,7 +95,7 @@ module.exports = function (grunt) {
             report: 'gzip'
         },
         build: {
-            src: 'src/js/medium-editor.js',
+            src: 'dist/js/medium-editor.js',
             dest: 'dist/js/<%= pkg.name %>.min.js'
         }
     };
@@ -101,7 +108,9 @@ module.exports = function (grunt) {
                 'fallback-colors': false,
                 'gradients': false,
                 'important': false,
-                'import': 2
+                'import': 2,
+                'outline-none': false,
+                'adjoining-classes': false
             },
             src: 'dist/css/**/*.css'
         }
@@ -187,7 +196,7 @@ module.exports = function (grunt) {
             stripBanners: true
         },
         dist: {
-            src: 'src/js/medium-editor.js',
+            src: srcFiles,
             dest: 'dist/js/<%= pkg.name %>.js'
         }
     };
@@ -195,7 +204,7 @@ module.exports = function (grunt) {
     gruntConfig.plato = {
         feed: {
             files: {
-                'reports/plato': ['src/js/medium-editor.js']
+                'reports/plato': srcFiles
             }
         }
     };
@@ -222,9 +231,14 @@ module.exports = function (grunt) {
         ]
     });
 
+<<<<<<< HEAD
     grunt.registerTask('test', ['connect', 'jslint', 'jasmine:suite', 'csslint', 'saucelabs-jasmine']);
     grunt.registerTask('sauce', ['connect', 'saucelabs-jasmine']);
     grunt.registerTask('js', ['jslint', 'jasmine:suite', 'uglify', 'concat']);
+=======
+    grunt.registerTask('test', ['jslint', 'jasmine:suite', 'csslint']);
+    grunt.registerTask('js', ['jslint', 'jasmine:suite', 'concat', 'uglify']);
+>>>>>>> master
     grunt.registerTask('css', ['sass', 'autoprefixer', 'cssmin', 'csslint']);
     grunt.registerTask('default', ['js', 'css']);
 

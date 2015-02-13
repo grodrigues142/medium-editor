@@ -1,7 +1,7 @@
 /*global MediumEditor, describe, it, expect, spyOn,
-         afterEach, beforeEach, selectElementContents,
-         jasmine, fireEvent, console, tearDown,
-         selectElementContentsAndFire, xit */
+     afterEach, beforeEach, selectElementContents,
+     jasmine, fireEvent, console, tearDown,
+     selectElementContentsAndFire, xit */
 
 describe('Anchor Button TestCase', function () {
     'use strict';
@@ -26,7 +26,7 @@ describe('Anchor Button TestCase', function () {
                 editor = new MediumEditor('.editor');
             selectElementContentsAndFire(editor.elements[0]);
             jasmine.clock().tick(1);
-            button = editor.toolbar.querySelector('[data-element="a"]');
+            button = editor.toolbar.querySelector('[data-action="anchor"]');
             fireEvent(button, 'click');
             expect(editor.toolbarActions.style.display).toBe('none');
             expect(editor.anchorForm.style.display).toBe('block');
@@ -38,8 +38,8 @@ describe('Anchor Button TestCase', function () {
             var button,
                 editor = new MediumEditor('.editor');
             selectElementContentsAndFire(editor.elements[0]);
-            jasmine.clock().tick(1);
-            button = editor.toolbar.querySelector('[data-element="a"]');
+            jasmine.clock().tick(11); // checkSelection delay
+            button = editor.toolbar.querySelector('[data-action="anchor"]');
             editor.anchorForm.style.display = 'block';
             fireEvent(button, 'click');
             expect(editor.toolbarActions.style.display).toBe('block');
@@ -53,8 +53,8 @@ describe('Anchor Button TestCase', function () {
             var button,
                 editor = new MediumEditor('.editor');
             selectElementContentsAndFire(editor.elements[0]);
-            jasmine.clock().tick(1);
-            button = editor.toolbar.querySelector('[data-element="a"]');
+            jasmine.clock().tick(11); // checkSelection delay
+            button = editor.toolbar.querySelector('[data-action="anchor"]');
             fireEvent(button, 'click');
             expect(this.el.innerHTML, 'link');
             expect(document.execCommand).toHaveBeenCalled();
@@ -70,7 +70,7 @@ describe('Anchor Button TestCase', function () {
                 input;
 
             selectElementContents(editor.elements[0]);
-            button = editor.toolbar.querySelector('[data-element="a"]');
+            button = editor.toolbar.querySelector('[data-action="anchor"]');
             fireEvent(button, 'click');
             input = editor.anchorForm.querySelector('input');
             input.value = 'test';
@@ -84,7 +84,7 @@ describe('Anchor Button TestCase', function () {
                 input;
 
             selectElementContents(editor.elements[0]);
-            button = editor.toolbar.querySelector('[data-element="a"]');
+            button = editor.toolbar.querySelector('[data-action="anchor"]');
             fireEvent(button, 'click');
             input = editor.anchorForm.querySelector('input');
             input.value = '';
@@ -94,33 +94,45 @@ describe('Anchor Button TestCase', function () {
         it('should add http:// if need be and checkLinkFormat option is set to true', function () {
             var editor = new MediumEditor('.editor', {
                 checkLinkFormat: true
-            });
+            }),
+                link;
+
             selectElementContentsAndFire(editor.elements[0]);
             editor.showAnchorForm('test.com');
             fireEvent(editor.anchorForm.querySelector('a.medium-editor-toobar-save'), 'click');
 
-            expect(editor.elements[0].querySelector('a').href).toBe('http://test.com/');
+            link = editor.elements[0].querySelector('a');
+            expect(link).not.toBeNull();
+            expect(link.href).toBe('http://test.com/');
         });
         it('should not change protocol when a valid one is included', function () {
             var editor = new MediumEditor('.editor', {
                 checkLinkFormat: true
             }),
-                validUrl = 'mailto:test.com';
+                validUrl = 'mailto:test.com',
+                link;
+
             selectElementContentsAndFire(editor.elements[0]);
             editor.showAnchorForm(validUrl);
             fireEvent(editor.anchorForm.querySelector('a.medium-editor-toobar-save'), 'click');
 
-            expect(editor.elements[0].querySelector('a').href).toBe(validUrl);
+            link = editor.elements[0].querySelector('a');
+            expect(link).not.toBeNull();
+            expect(link.href).toBe(validUrl);
         });
         it('should add target="_blank" when respective option is set to true', function () {
             var editor = new MediumEditor('.editor', {
                 targetBlank: true
-            });
+            }),
+                link;
+
             selectElementContentsAndFire(editor.elements[0]);
             editor.showAnchorForm('http://test.com');
             fireEvent(editor.anchorForm.querySelector('a.medium-editor-toobar-save'), 'click');
 
-            expect(editor.elements[0].querySelector('a').target).toBe('_blank');
+            link = editor.elements[0].querySelector('a');
+            expect(link).not.toBeNull();
+            expect(link.target).toBe('_blank');
         });
         it('should create a button when user selects this option and presses enter', function () {
             spyOn(MediumEditor.prototype, 'createLink').and.callThrough();
@@ -130,10 +142,11 @@ describe('Anchor Button TestCase', function () {
             }),
                 save,
                 input,
-                button;
+                button,
+                link;
 
             selectElementContents(editor.elements[0]);
-            save = editor.toolbar.querySelector('[data-element="a"]');
+            save = editor.toolbar.querySelector('[data-action="anchor"]');
             fireEvent(save, 'click');
 
             input = editor.anchorForm.querySelector('input.medium-editor-toolbar-input');
@@ -145,8 +158,11 @@ describe('Anchor Button TestCase', function () {
 
             fireEvent(input, 'keyup', 13);
             expect(editor.createLink).toHaveBeenCalledWith(input, '_self', 'btn btn-default');
-            expect(editor.elements[0].querySelector('a').classList.contains('btn')).toBe(true);
-            expect(editor.elements[0].querySelector('a').classList.contains('btn-default')).toBe(true);
+
+            link = editor.elements[0].querySelector('a');
+            expect(link).not.toBeNull();
+            expect(link.classList.contains('btn')).toBe(true);
+            expect(link.classList.contains('btn-default')).toBe(true);
         });
     });
 
@@ -158,7 +174,7 @@ describe('Anchor Button TestCase', function () {
                 cancel;
 
             selectElementContents(editor.elements[0]);
-            button = editor.toolbar.querySelector('[data-element="a"]');
+            button = editor.toolbar.querySelector('[data-action="anchor"]');
             cancel = editor.anchorForm.querySelector('a.medium-editor-toobar-close');
             fireEvent(button, 'click');
             expect(editor.anchorForm.style.display).toBe('block');
