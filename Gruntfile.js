@@ -51,7 +51,7 @@ module.exports = function (grunt) {
 
     gruntConfig.jslint = {
         client: {
-            src: ['src/js/**/*.js', 'spec/*.js', 'Gruntfile.js'],
+            src: ['src/js/**/*.js', 'spec/*.spec.js', 'Gruntfile.js'],
             directives: {
                 browser: true,
                 unparam: true,
@@ -63,9 +63,9 @@ module.exports = function (grunt) {
 
     gruntConfig.jasmine = {
         suite: {
-            src: 'src/js/**/*.js',
+            src: ['src/js/**/*.js', 'spec/jasmine-jsreporter.js'],
             options: {
-                specs: 'spec/*.spec.js',
+                specs: ['spec/*.spec.js', 'spec/jasmine-jsreporter-script.js'],
                 helpers: 'spec/helpers/*.js',
                 styles: 'dist/css/*.css',
                 junit: {
