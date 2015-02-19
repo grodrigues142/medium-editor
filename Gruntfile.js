@@ -222,7 +222,6 @@ module.exports = function (grunt) {
                 concurrency: 3,
                 browsers: browsers,
                 sauceConfig: {
-                    passed: true,
                     'public': 'public',
                     build: process.env.TRAVIS_JOB_ID,
                     name: 'medium-editor-tests'
