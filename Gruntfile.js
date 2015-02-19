@@ -37,6 +37,7 @@ module.exports = function (grunt) {
             platform: "mac"
         }],
         srcFiles = [
+            'src/js/polyfill.js',
             'src/js/util.js',
             'src/js/selection.js',
             'src/js/button.js',
@@ -55,6 +56,7 @@ module.exports = function (grunt) {
 
     gruntConfig.jslint = {
         client: {
+            exclude: ['src/js/polyfills.js'],
             src: ['src/js/**/*.js', 'spec/*.spec.js', 'Gruntfile.js'],
             directives: {
                 browser: true,
