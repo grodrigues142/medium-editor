@@ -216,7 +216,13 @@ module.exports = function (grunt) {
                 tunnelTimeout: 5,
                 build: process.env.TRAVIS_JOB_ID,
                 concurrency: 3,
-                browsers: browsers
+                browsers: browsers,
+                sauceConfig: {
+                    passed: true,
+                    'public': 'public',
+                    build: process.env.TRAVIS_JOB_ID,
+                    name: 'medium-editor-tests'
+                }
             }
         }
     };
