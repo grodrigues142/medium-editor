@@ -243,7 +243,8 @@ module.exports = function (grunt) {
         ]
     });
 
-    grunt.registerTask('test', ['connect', 'jslint', 'jasmine:suite', 'csslint', 'saucelabs-jasmine']);
+    grunt.registerTask('test', ['jslint', 'jasmine:suite', 'csslint']);
+    grunt.registerTask('travis', ['connect', 'jslint', 'jasmine:suite', 'csslint', 'saucelabs-jasmine']);
     grunt.registerTask('sauce', ['connect', 'saucelabs-jasmine']);
     grunt.registerTask('js', ['jslint', 'jasmine:suite', 'concat', 'uglify']);
     grunt.registerTask('css', ['sass', 'autoprefixer', 'cssmin', 'csslint']);

@@ -5,6 +5,8 @@ notifications:
     email: false
 before_script:
     - npm install -g grunt-cli
+script:
+  - npm run test:ci
 addons:
   sauce_connect: true
 env:
