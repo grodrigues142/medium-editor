@@ -157,7 +157,7 @@ describe('Buttons TestCase', function () {
 
             fireEvent(button, 'click');
             expect(button.classList.contains('medium-editor-button-active')).toBe(false);
-            expect(this.el.innerHTML).toBe('<p><span id="bold-span">lorem ipsum</span></p>');
+            expect(this.el.innerHTML).toMatch(/<p><span [^>]*id="bold-span">lorem ipsum<\/span><\/p>/);
         });
     });
 
@@ -204,7 +204,7 @@ describe('Buttons TestCase', function () {
 
             fireEvent(button, 'click');
             expect(button.classList.contains('medium-editor-button-active')).toBe(false);
-            expect(this.el.innerHTML).toBe('<p><span id="italic-span">lorem ipsum</span></p>');
+            expect(this.el.innerHTML).toMatch(/<p><span [^>]*id="italic-span">lorem ipsum<\/span><\/p>/);
         });
     });
 
@@ -236,7 +236,7 @@ describe('Buttons TestCase', function () {
 
             fireEvent(button, 'click');
             expect(button.classList.contains('medium-editor-button-active')).toBe(false);
-            expect(this.el.innerHTML).toBe('<p><span id="underline-span">lorem ipsum</span></p>');
+            expect(this.el.innerHTML).toMatch(/<p><span [^>]*id="underline-span">lorem ipsum<\/span><\/p>/);
         });
     });
 
@@ -268,7 +268,7 @@ describe('Buttons TestCase', function () {
 
             fireEvent(button, 'click');
             expect(button.classList.contains('medium-editor-button-active')).toBe(false);
-            expect(this.el.innerHTML).toBe('<p><span id="strike-span">lorem ipsum</span></p>');
+            expect(this.el.innerHTML).toMatch(/<p><span [^>]*id="strike-span">lorem ipsum<\/span><\/p>/);
         });
     });
 
